@@ -1,83 +1,191 @@
-# Tesouro Misterioso
+import random
 
-Um jogo de aventura e adivinhação desenvolvido em Python, no qual o jogador precisa encontrar um tesouro escondido para avançar por cinco fases de dificuldade progressiva.
+print("================================")
+print("       TESOURO MISTERIOSO")
+print("================================")
 
-## Sobre o projeto
+nickname = input("Insira seu nickname: ").strip()
 
-O **Tesouro Misterioso** foi desenvolvido como projeto acadêmico para a disciplina de Lógica de Programação, no curso de Análise e Desenvolvimento de Sistemas da Universidade Santo Amaro (UNISA).
+if nickname == "":
+    nickname = "Jogador"
 
-O jogo funciona diretamente pelo terminal e utiliza conceitos fundamentais de programação para criar uma experiência interativa, com escolhas, desafios e eventos aleatórios.
+# Cadastro dos jogadores
+jogadores = {
+    nickname: {"vitorias": 0, "derrotas": 0}
+}
 
-## Funcionalidades
+# Quantidade de portas em cada fase
+fases = [5, 7, 9, 12, 15]
 
-- Cadastro de jogadores por nickname.
-- Menu principal com cinco opções.
-- Cinco fases com dificuldade progressiva.
-- Sistema inicial de três vidas.
-- Eventos aleatórios: vida extra, armadilha ou nenhum efeito.
-- Dicas para ajudar a localizar o tesouro.
-- Placar individual de vitórias e derrotas.
-- Possibilidade de trocar de jogador.
-- Validação de entradas e tratamento de erros.
+while True:
+    print("\n========== MENU PRINCIPAL ==========")
+    print(f"Jogador atual: {nickname}")
+    print("1 - Jogar")
+    print("2 - Ver placar")
+    print("3 - Sair")
+    print("4 - Trocar nickname")
+    print("5 - Como jogar?")
 
-## Como funciona?
+    opcao = input("\nEscolha uma opção: ")
 
-O jogador precisa encontrar o tesouro escondido atrás de uma das portas em cada fase.
+    if opcao == "1":
 
-A quantidade de portas aumenta progressivamente:
+        print("\n=== TESOURO MISTERIOSO ===")
+        print("Encontre o tesouro nas 5 fases para vencer!")
 
-| Fase | Quantidade de portas |
-|---|---:|
-| 1 | 5 |
-| 2 | 7 |
-| 3 | 9 |
-| 4 | 12 |
-| 5 | 15 |
+        vidas = 3
+        venceu = False
 
-Ao escolher uma porta incorreta, um evento aleatório pode acontecer:
+        # Início das fases
+        for fase in range(1, 6):
 
-- Vida extra: ganha uma vida.
-- Armadilha: perde uma vida.
-- Nada acontece: continua com a mesma quantidade de vidas.
+            quantidade_portas = fases[fase - 1]
+            tesouro = random.randint(1, quantidade_portas)
 
-O objetivo é encontrar o tesouro nas cinco fases antes de perder todas as vidas.
+            print(f"\n========== FASE {fase} ==========")
+            print(f"Você tem {quantidade_portas} portas disponíveis!")
+            print(f"Vidas: {vidas}")
 
-## Tecnologias e conceitos utilizados
+            encontrou_tesouro = False
 
-- Python 3
-- Módulo `random`
-- Variáveis e tipos de dados
-- Estruturas condicionais (`if`, `elif` e `else`)
-- Laços de repetição (`while` e `for`)
-- Listas e dicionários
-- Entrada e saída de dados
-- Tratamento de erros (`try` e `except`)
+            while vidas > 0:
 
-## Como executar
+                try:
+                    porta = int(input(
+                        f"\nEscolha uma porta de 1 a {quantidade_portas}: "
+                    ))
+                except ValueError:
+                    print("Digite apenas números!")
+                    continue
 
-1. Tenha o Python instalado em seu computador.
-2. Faça o download ou clone este repositório.
-3. Abra o terminal na pasta do projeto.
-4. Execute o comando:
+                if porta < 1 or porta > quantidade_portas:
+                    print("Escolha uma porta válida!")
+                    continue
 
-`python main.py`
+                if porta == tesouro:
+                    print("\nPARABÉNS! Você encontrou o tesouro!")
+                    encontrou_tesouro = True
+                    break
 
-O jogo será iniciado diretamente no terminal.
+                else:
+                    print("\nVocê não encontrou o tesouro!")
 
-## Objetivo acadêmico
+                    # Sorteio de evento aleatório
+                    evento = random.randint(1, 3)
 
-O projeto teve como objetivo aplicar conceitos fundamentais de lógica de programação em uma aplicação prática, trabalhando estruturas de decisão, repetição, organização de dados e geração de números aleatórios.
+                    if evento == 1:
+                        vidas += 1
+                        print("Você encontrou uma vida extra!")
 
-## Melhorias futuras
+                    elif evento == 2:
+                        vidas -= 1
+                        print("Você caiu em uma armadilha!")
 
-Algumas possibilidades de evolução do projeto:
+                    else:
+                        print("Nada aconteceu desta vez.")
 
-- Implementação de níveis de dificuldade.
-- Salvamento permanente das estatísticas dos jogadores.
-- Organização do código em funções.
-- Criação de testes automatizados.
-- Melhorias na interface e experiência do jogador.
+                    # Dica sobre a localização do tesouro
+                    if porta < tesouro:
+                        print("Dica: o tesouro está em uma porta maior!")
+                    else:
+                        print("Dica: o tesouro está em uma porta menor!")
 
-## Desenvolvimento
+                    print("Vidas restantes:", vidas)
 
-Projeto acadêmico desenvolvido em grupo por estudantes de Análise e Desenvolvimento de Sistemas da Universidade Santo Amaro (UNISA), em 2026.
+            # Se o jogador perdeu todas as vidas, a partida termina
+            if vidas == 0:
+                break
+
+            if encontrou_tesouro:
+                print(f"\nFASE {fase} CONCLUÍDA!")
+
+                if fase == 5:
+                    print("\nINCRÍVEL! Você completou todas as fases!")
+                    venceu = True
+
+        # Resultado da partida
+        if venceu:
+            print("VOCÊ VENCEU!")
+            jogadores[nickname]["vitorias"] += 1
+
+        else:
+            print("\nFIM DE JOGO!")
+            jogadores[nickname]["derrotas"] += 1
+
+    elif opcao == "2":
+
+        print("\n========== PLACAR ==========")
+
+        for nome, dados in jogadores.items():
+            print(f"\nJogador: {nome}")
+            print(f"Vitórias: {dados['vitorias']}")
+            print(f"Derrotas: {dados['derrotas']}")
+
+    elif opcao == "3":
+
+        print("\n========== RESULTADO FINAL ==========")
+
+        for nome, dados in jogadores.items():
+            print(f"\n{nome} - {dados['vitorias']} vitórias e "
+                  f"{dados['derrotas']} derrotas")
+
+        print("\nObrigado por jogar!")
+        break
+
+    elif opcao == "4":
+
+        print("\n========== TROCAR NICKNAME ==========")
+
+        novo_nickname = input("Digite seu novo nickname: ").strip()
+
+        if novo_nickname == "":
+            print("O nickname não pode ficar vazio!")
+
+        else:
+            nickname = novo_nickname
+
+            if nickname not in jogadores:
+                jogadores[nickname] = {
+                    "vitorias": 0,
+                    "derrotas": 0
+                }
+
+            print(f"\nNickname alterado para {nickname}!")
+
+    elif opcao == "5":
+
+        print("""
+========== COMO JOGAR? ==========
+
+1. O jogo possui 5 fases.
+
+2. Cada fase possui uma quantidade diferente
+   de portas:
+   - Fase 1: 5 portas
+   - Fase 2: 7 portas
+   - Fase 3: 9 portas
+   - Fase 4: 12 portas
+   - Fase 5: 15 portas
+
+3. Você começa com 3 vidas.
+
+4. Ao escolher uma porta errada, um evento
+   aleatório pode acontecer:
+
+   - VIDA EXTRA: recebe uma vida adicional.
+   - ARMADILHA: perde uma vida.
+   - NADA: nenhum efeito.
+
+5. Você avança de fase ao encontrar o tesouro.
+
+6. Para vencer, encontre o tesouro nas 5 fases.
+
+7. Se perder todas as vidas, a partida termina.
+
+8. O placar registra suas vitórias e derrotas.
+
+BOA SORTE NA AVENTURA!
+""")
+
+    else:
+        print("Opção inválida! Escolha entre 1 e 5.")
